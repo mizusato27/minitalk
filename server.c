@@ -6,16 +6,26 @@
 /*   By: mizusato <mizusato@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 19:05:24 by mizusato          #+#    #+#             */
-/*   Updated: 2025/01/08 19:37:10 by mizusato         ###   ########.fr       */
+/*   Updated: 2025/01/08 20:20:42 by mizusato         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	sig_handler(int signum)
+static void	sig_handler(int signum)
 {
-	static char	byte;
-	static int	power;
+	static char	byte = 0;
+	static int	power = 0;
+
+	if (signum == SIGUSR2)
+		byte += 1 << (7 - power);
+	power++;
+	if (power == 8)
+	{
+		ft_printf("%c", byte);
+		byte = 0;
+		power = 0;
+	}
 }
 
 int	main(int argc, char **argv)
