@@ -6,7 +6,7 @@
 /*   By: mizusato <mizusato@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 19:47:39 by mizusato          #+#    #+#             */
-/*   Updated: 2025/01/08 20:20:32 by mizusato         ###   ########.fr       */
+/*   Updated: 2025/01/10 18:48:47 by mizusato         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,19 @@ static void	send_msg(char c, int pid)
 	while (i >= 0)
 	{
 		if (c >> i & 1)
-			kill(pid, SIGUSR2);
+		{
+			if (kill(pid, SIGUSR2) < 0)
+				error_exit();
+		}
 		else
-			kill(pid, SIGUSR1);
-		usleep(100);
+		{
+			if (kill(pid, SIGUSR1) < 0)
+				error_exit();
+		}
+		usleep(500);
 		i--;
 	}
+	usleep(100);
 }
 
 int	main(int argc, char **argv)

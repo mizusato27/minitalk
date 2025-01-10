@@ -6,11 +6,17 @@
 /*   By: mizusato <mizusato@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 19:05:24 by mizusato          #+#    #+#             */
-/*   Updated: 2025/01/08 20:20:42 by mizusato         ###   ########.fr       */
+/*   Updated: 2025/01/10 18:48:14 by mizusato         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+static void	error_exit(void)
+{
+	write(2, "Error\n", 6);
+	exit (1);
+}
 
 static void	sig_handler(int signum)
 {
@@ -30,15 +36,23 @@ static void	sig_handler(int signum)
 
 int	main(int argc, char **argv)
 {
-	pid_t	pid;
+	pid_t				pid;
+	struct sigaction	sa;
 
 	(void)argv;
 	if (argc == 1)
 	{
 		pid = getpid();
 		ft_printf("PID:%d\n", pid);
-		signal(SIGUSR1, sig_handler);
-		signal(SIGUSR2, sig_handler);
+		sa.sa_handler = sig_handler;
+		sigemptyset(&sa.sa_mask);
+		sigaddset(&sa.sa_mask, SIGUSR1);
+		sigaddset(&sa.sa_mask, SIGUSR2);
+		sa.sa_flags = 0;
+		if (sigaction(SIGUSR1, &sa, NULL) < 0)
+			error_exit();
+		if (sigaction(SIGUSR2, &sa, NULL) < 0)
+			error_exit();
 		while (1)
 			pause();
 	}
